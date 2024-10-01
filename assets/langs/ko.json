@@ -1,5 +1,17 @@
 {
-  "DETAILS": "상세",
-  "HOME": "홈",
-  "SEE_DETAILS": "상세 보기"
+  "common": {
+    "appName": "Convex Expo 워크샵",
+    "home": "홈",
+    "my": "나",
+    "updateApp": "Update App",
+    "appErrorMessage": "통신이 원활하지 않습니다.\n네트워크 상태를 확인해주세요.",
+    "retry": "재시도",
+    "or": "또는",
+    "update": "업데이트",
+    "signOut": "로그아웃"
+  },
+  "intro": {
+    "description": "Convex에 대한 모든 것을 Expo를 활용하여 탐구해보세요!",
+    "continueWithProvider": "{{provider}} 계정으로 시작하기"
+  }
 }

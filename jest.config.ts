@@ -13,7 +13,7 @@ export default async (): Promise<Config.InitialOptions> => {
     },
     transformIgnorePatterns: [
       // eslint-disable-next-line max-len
-      'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|dooboo-ui|@dooboo-ui)',
+      'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|dooboo-ui|@dooboo-ui|react-clerk|@clerk)',
     ],
     modulePaths: ['<rootDir>'],
     moduleDirectories: ['node_modules'],
@@ -27,6 +27,9 @@ export default async (): Promise<Config.InitialOptions> => {
     moduleNameMapper: {
       '\\.svg': '<rootDir>/__mocks__/svgMock.js',
       '.+\\.(css|style|less|sass|scss|png|jpg|ttf|woff|woff2)$': 'babel-jest',
+      '^@clerk/clerk-expo$': '<rootDir>/__mocks__/@clerk/clerk-expo.ts',
+      '^convex/react-clerk$': '<rootDir>/__mocks__/convex/react-clerk.ts',
+      '^convex/react$': '<rootDir>/__mocks__/convex/react.ts',
     },
     setupFiles: [
       '<rootDir>/test/testSetup.ts',

@@ -12,7 +12,6 @@ const customGlobal: GlobalWithFetchMock = global as GlobalWithFetchMock &
 
 customGlobal.fetch = require('jest-fetch-mock');
 customGlobal.fetchMock = customGlobal.fetch;
-
 global.__reanimatedWorkletInit = jest.fn();
 
 jest.mock('expo-router');

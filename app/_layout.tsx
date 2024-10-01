@@ -20,9 +20,6 @@ import {
   WEB_URL,
 } from '../src/utils/constants';
 import CustomLoadingIndicator from '../src/uis/CustomLoadingIndicator';
-import {ClerkLoaded, ClerkProvider} from '@clerk/clerk-expo';
-import {tokenCache} from '../src/utils/cache';
-import {clerkPublishableKey} from '../config';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -138,19 +135,12 @@ export default function RootLayout(): JSX.Element | null {
         flex: 1;
       `}
     >
-      <ClerkProvider
-        tokenCache={tokenCache}
-        publishableKey={clerkPublishableKey}
-      >
-        <ClerkLoaded>
-          <RootProvider initialThemeType={localThemeType as ColorSchemeName}>
-            <>
-              <StatusBarBrightness />
-              <Layout />
-            </>
-          </RootProvider>
-        </ClerkLoaded>
-      </ClerkProvider>
+      <RootProvider initialThemeType={localThemeType as ColorSchemeName}>
+        <>
+          <StatusBarBrightness />
+          <Layout />
+        </>
+      </RootProvider>
     </GestureHandlerRootView>
   );
 }

@@ -9,6 +9,7 @@ import {Image} from 'expo-image';
 import FallbackComponent from '../../../src/uis/FallbackComponent';
 import {useAuth} from '@clerk/clerk-expo';
 import {useState} from 'react';
+import { useConvexAuth } from 'convex/react';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -54,6 +55,8 @@ const UserBio = styled.Text`
 export default function My(): JSX.Element {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const {signOut} = useAuth();
+  const auth = useConvexAuth();
+  console.log('auth', auth);
 
   const handleSignOut = async () => {
     try {

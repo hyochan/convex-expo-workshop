@@ -62,7 +62,6 @@ export default ({config}: ConfigContext): ExpoConfig => ({
     backgroundColor: '#1B1B1B',
   },
   extra: {
-    ROOT_URL: process.env.ROOT_URL,
     expoProjectId: process.env.expoProjectId,
     // eas: {projectId: ''},
   },

@@ -7,6 +7,8 @@ import styled, {css} from '@emotion/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Icon, useDooboo} from 'dooboo-ui';
 import CustomPressable from 'dooboo-ui/uis/CustomPressable';
+import {ConvexProviderWithClerk} from 'convex/react-clerk';
+import {ConvexReactClient} from 'convex/react';
 import StatusBarBrightness from 'dooboo-ui/uis/StatusbarBrightness';
 import {Stack, useRouter} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -20,7 +22,7 @@ import {
   WEB_URL,
 } from '../src/utils/constants';
 import CustomLoadingIndicator from '../src/uis/CustomLoadingIndicator';
-import {ClerkLoaded, ClerkProvider} from '@clerk/clerk-expo';
+import {ClerkLoaded, ClerkProvider, useAuth} from '@clerk/clerk-expo';
 import {tokenCache} from '../src/utils/cache';
 import {clerkPublishableKey} from '../config';
 
@@ -39,6 +41,10 @@ const Content = styled.View`
   max-width: ${COMPONENT_WIDTH + 'px'};
   background-color: ${({theme}) => theme.bg.basic};
 `;
+
+const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
+  unsavedChangesWarning: false,
+});
 
 function Layout(): JSX.Element | null {
   const {assetLoaded, theme} = useDooboo();
@@ -143,12 +149,14 @@ export default function RootLayout(): JSX.Element | null {
         publishableKey={clerkPublishableKey}
       >
         <ClerkLoaded>
-          <RootProvider initialThemeType={localThemeType as ColorSchemeName}>
-            <>
-              <StatusBarBrightness />
-              <Layout />
-            </>
-          </RootProvider>
+          <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+            <RootProvider initialThemeType={localThemeType as ColorSchemeName}>
+              <>
+                <StatusBarBrightness />
+                <Layout />
+              </>
+            </RootProvider>
+          </ConvexProviderWithClerk>
         </ClerkLoaded>
       </ClerkProvider>
     </GestureHandlerRootView>

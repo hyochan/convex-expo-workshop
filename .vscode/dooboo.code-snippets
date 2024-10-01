@@ -1,0 +1,32 @@
+{
+  "monymony React Native Component": {
+    "prefix": "dooboo",
+    "body": [
+      "/**",
+      " * @name $1",
+      " *",
+      " * See the style guide: https://github.com/hyochan/style-guide/blob/main/docs/REACT.md",
+      " */",
+      "import styled from '@emotion/native';",
+      "import {View} from 'react-native';",
+      "",
+      "type Props = {}",
+      "",
+      "function $1({}: Props): JSX.Element {",
+      "",
+      "  return (",
+      "    <Container>",
+      "      <View></View>",
+      "    </Container>",
+      "  )",
+      "}",
+      "",
+      "export default $1",
+      "",
+      "const Container = styled.View`",
+      "  flex: 1;",
+      "`"
+    ],
+    "description": "React Native Component"
+  }
+}

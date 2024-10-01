@@ -1,5 +1,17 @@
 {
-  "DETAILS": "Details",
-  "HOME": "Home",
-  "SEE_DETAILS": "See Details"
+  "common": {
+    "appName": "Convex Expo Workshop",
+    "home": "Home",
+    "my": "My",
+    "appErrorMessage": "Communication is not smooth.\nPlease check your network status.",
+    "retry": "Retry",
+    "or": "or",
+    "update": "Update",
+    "updateApp": "Update App",
+    "signOut": "Sign Out"
+  },
+  "intro": {
+    "description": "Explore everything about Convex using Expo!",
+    "continueWithProvider": "Continue with {{provider}}"
+  }
 }

@@ -3,7 +3,6 @@ import FallbackComponent from 'react-native-error-boundary/lib/ErrorBoundary/Fal
 import {ActionSheetProvider} from '@expo/react-native-action-sheet';
 import type {ThemeType} from 'dooboo-ui';
 import {DoobooProvider} from 'dooboo-ui';
-import {RecoilRoot} from 'recoil';
 
 import {theme} from '../theme';
 import {handleErrorConsole} from '../utils/error';
@@ -15,21 +14,19 @@ interface Props {
 
 function RootProvider({initialThemeType, children}: Props): JSX.Element {
   return (
-    <RecoilRoot>
-      <DoobooProvider
-        themeConfig={{
-          initialThemeType: initialThemeType ?? undefined,
-          customTheme: theme,
-        }}
+    <DoobooProvider
+      themeConfig={{
+        initialThemeType: initialThemeType ?? undefined,
+        customTheme: theme,
+      }}
+    >
+      <ErrorBoundary
+        FallbackComponent={FallbackComponent}
+        onError={handleErrorConsole}
       >
-        <ErrorBoundary
-          FallbackComponent={FallbackComponent}
-          onError={handleErrorConsole}
-        >
-          <ActionSheetProvider>{children}</ActionSheetProvider>
-        </ErrorBoundary>
-      </DoobooProvider>
-    </RecoilRoot>
+        <ActionSheetProvider>{children}</ActionSheetProvider>
+      </ErrorBoundary>
+    </DoobooProvider>
   );
 }
 

@@ -24,10 +24,25 @@ export const capitalize = (
   >['name'];
 };
 
-export const t = (param: keyof typeof en, mapObj?: object): string => {
-  if (mapObj) {
-    return i18n.t(param, mapObj);
-  }
+type NestedKeys<T> = T extends object
+  ? {
+      [K in keyof T]: K extends string | number
+        ? `${K}` | (T[K] extends object ? `${K}.${NestedKeys<T[K]>}` : never)
+        : never;
+    }[keyof T]
+  : '';
 
-  return i18n.t(param);
+export const t = (
+  param: NestedKeys<typeof en>,
+  mapObj?: object,
+  locale?: string,
+): string => {
+  const currentLocale = i18n.locale;
+
+  if (locale) i18n.locale = locale;
+
+  const translation = i18n.t(param, mapObj);
+  i18n.locale = currentLocale;
+
+  return translation;
 };

@@ -19,6 +19,10 @@ import {
   delayPressIn,
   WEB_URL,
 } from '../src/utils/constants';
+import CustomLoadingIndicator from '../src/uis/CustomLoadingIndicator';
+import {ClerkLoaded, ClerkProvider} from '@clerk/clerk-expo';
+import {tokenCache} from '../src/utils/cache';
+import {clerkPublishableKey} from '../config';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -47,7 +51,7 @@ function Layout(): JSX.Element | null {
   }, [assetLoaded]);
 
   if (!assetLoaded) {
-    return null;
+    return <CustomLoadingIndicator />;
   }
 
   return (
@@ -55,6 +59,7 @@ function Layout(): JSX.Element | null {
       <Content>
         <Stack
           screenOptions={{
+            headerShown: false,
             headerStyle: {backgroundColor: theme.bg.basic},
             headerTintColor: theme.text.label,
             headerTitleStyle: {
@@ -133,12 +138,19 @@ export default function RootLayout(): JSX.Element | null {
         flex: 1;
       `}
     >
-      <RootProvider initialThemeType={localThemeType as ColorSchemeName}>
-        <>
-          <StatusBarBrightness />
-          <Layout />
-        </>
-      </RootProvider>
+      <ClerkProvider
+        tokenCache={tokenCache}
+        publishableKey={clerkPublishableKey}
+      >
+        <ClerkLoaded>
+          <RootProvider initialThemeType={localThemeType as ColorSchemeName}>
+            <>
+              <StatusBarBrightness />
+              <Layout />
+            </>
+          </RootProvider>
+        </ClerkLoaded>
+      </ClerkProvider>
     </GestureHandlerRootView>
   );
 }

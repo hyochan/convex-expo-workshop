@@ -1,7 +1,7 @@
 import {mutation, query} from './_generated/server';
 import {v} from 'convex/values';
 
-export const createUser = mutation({
+export const updateProfile = mutation({
   args: v.object({
     displayName: v.string(),
     jobTitle: v.string(),
@@ -11,17 +11,24 @@ export const createUser = mutation({
     linkedInUrl: v.string(),
   }),
   handler: async (ctx, args) => {
-    console.log('Mutation handler 실행됨:', args);
-    const userId = await ctx.db.insert('users', {
-      displayName: args.displayName,
-      jobTitle: args.jobTitle,
-      description: args.description,
-      websiteUrl: args.websiteUrl,
-      githubUrl: args.githubUrl,
-      linkedInUrl: args.linkedInUrl,
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error('Called storeUser without authentication present');
+    }
+
+    const user = await ctx.db.query('users').unique();
+
+    if (user !== null) {
+      if (user.name !== identity.name) {
+        await ctx.db.patch(user._id, args);
+      }
+      return user._id;
+    }
+
+    return await ctx.db.insert('users', {
+      ...args,
+      tokenIdentifier: identity.tokenIdentifier,
     });
-    console.log('User created successfully with ID:', userId);
-    return userId;
   },
 });
 

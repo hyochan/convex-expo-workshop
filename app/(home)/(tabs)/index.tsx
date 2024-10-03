@@ -89,12 +89,7 @@ export default function My(): JSX.Element {
               onPress={() => {
                 push('/profile-update');
               }}
-              hitSlop={{
-                bottom: 8,
-                left: 8,
-                right: 8,
-                top: 8,
-              }}
+              hitSlop={{bottom: 8, left: 8, right: 8, top: 8}}
               style={
                 Platform.OS === 'web'
                   ? css`

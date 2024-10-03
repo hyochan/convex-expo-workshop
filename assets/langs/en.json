@@ -13,5 +13,18 @@
   "intro": {
     "description": "Explore everything about Convex using Expo!",
     "continueWithProvider": "Continue with {{provider}}"
+  },
+  "profileUpdate": {
+    "title": "Profile Update",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "Enter your display name",
+    "jobTitle": "Job Title",
+    "jobTitlePlaceholder": "Enter your job title",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter your description",
+    "websites": "Websites",
+    "websiteUrl": "Website URL",
+    "githubUrl": "GitHub URL",
+    "linkedInUrl": "LinkedIn URL"
   }
 }

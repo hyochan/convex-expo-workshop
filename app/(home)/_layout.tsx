@@ -21,6 +21,7 @@ export default function HomeLayout() {
     <Stack
       initialRouteName={'(tabs)'}
       screenOptions={{
+        headerShown: true,
         headerStyle: {backgroundColor: theme.bg.basic},
         headerTintColor: theme.text.label,
         headerTitleStyle: {

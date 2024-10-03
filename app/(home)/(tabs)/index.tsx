@@ -1,19 +1,22 @@
-import styled from '@emotion/native';
-import {Stack} from 'expo-router';
-import {Button, Typography} from 'dooboo-ui';
+import styled, {css} from '@emotion/native';
+import {Stack, useRouter} from 'expo-router';
+import {Button, Icon, IconButton, Typography} from 'dooboo-ui';
 import {t} from '../../../src/STRINGS';
-import {ScrollView} from 'react-native';
+import {Platform, Pressable, ScrollView} from 'react-native';
 import {IC_ICON} from '../../../src/icons';
 import ErrorBoundary from 'react-native-error-boundary';
 import {Image} from 'expo-image';
 import FallbackComponent from '../../../src/uis/FallbackComponent';
 import {useAuth} from '@clerk/clerk-expo';
 import {useState} from 'react';
-import { useConvexAuth } from 'convex/react';
+import {RectButton} from 'react-native-gesture-handler';
 
 const Container = styled.SafeAreaView`
   flex: 1;
   background-color: ${({theme}) => theme.bg.basic};
+
+  justify-content: center;
+  align-items: center;
 `;
 
 const ProfileHeader = styled.View`
@@ -26,7 +29,10 @@ const ProfileHeader = styled.View`
 
 const Content = styled.View`
   padding: 16px;
+  flex: 1;
 
+  justify-content: center;
+  align-items: center;
   gap: 16px;
 `;
 
@@ -39,24 +45,28 @@ const UserAvatar = styled(Image)`
   border-color: ${({theme}) => theme.role.border};
 `;
 
-const UserName = styled(Typography.Heading5)`
+const TitleText = styled(Typography.Heading5)`
   font-size: 28px;
   font-weight: bold;
   margin-bottom: 8px;
 `;
 
-const UserBio = styled.Text`
+const Description = styled.Text`
   font-size: 16px;
   color: ${({theme}) => theme.text.label};
   text-align: center;
   margin-bottom: 16px;
 `;
 
+const WebsitesWrapper = styled.View`
+  flex-direction: row;
+  gap: 16px;
+`;
+
 export default function My(): JSX.Element {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const {signOut} = useAuth();
-  const auth = useConvexAuth();
-  console.log('auth', auth);
+  const {push} = useRouter();
 
   const handleSignOut = async () => {
     try {
@@ -70,24 +80,81 @@ export default function My(): JSX.Element {
 
   return (
     <ErrorBoundary FallbackComponent={FallbackComponent}>
-      <Stack.Screen options={{title: t('common.my')}} />
+      <Stack.Screen
+        options={{
+          title: t('common.my'),
+          headerRight: () => (
+            <RectButton
+              underlayColor="transparent"
+              onPress={() => {
+                push('/profile-update');
+              }}
+              hitSlop={{
+                bottom: 8,
+                left: 8,
+                right: 8,
+                top: 8,
+              }}
+              style={
+                Platform.OS === 'web'
+                  ? css`
+                      border-radius: 48px;
+                    `
+                  : css`
+                      margin-top: 4px;
+                      width: 26px;
+                    `
+              }
+            >
+              <Icon name="Pencil" size={18} />
+            </RectButton>
+          ),
+        }}
+      />
       <Container>
-        <ScrollView bounces={false}>
+        <ScrollView
+          bounces={false}
+          style={css`
+            align-self: stretch;
+          `}
+        >
           <ProfileHeader>
             <UserAvatar source={IC_ICON} />
-            <UserName>User Name</UserName>
+            <TitleText>I'm [displayName]</TitleText>
+            <Typography.Body1>[Job Title]</Typography.Body1>
           </ProfileHeader>
           <Content>
-            <UserBio>Hello there!!</UserBio>
-            <Button
-              type='outlined'
-              color='warning'
-              text={t('common.signOut')}
-              onPress={handleSignOut}
-              loading={isSigningOut}
-            />
+            <Description>[Description]</Description>
+            <WebsitesWrapper>
+              <IconButton
+                icon="Browser"
+                color="primary"
+                type="outlined"
+                onPress={() => {}}
+              />
+              <IconButton icon="GithubLogo" color="light" onPress={() => {}} />
+              <IconButton
+                icon="LinkedinLogo"
+                color="light"
+                onPress={() => {}}
+              />
+            </WebsitesWrapper>
           </Content>
         </ScrollView>
+        <Button
+          style={css`
+            padding: 0 24px;
+            min-width: 200px;
+
+            position: absolute;
+            bottom: 16px;
+          `}
+          type="outlined"
+          color="warning"
+          text={t('common.signOut')}
+          onPress={handleSignOut}
+          loading={isSigningOut}
+        />
       </Container>
     </ErrorBoundary>
   );

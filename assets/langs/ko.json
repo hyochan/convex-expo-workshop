@@ -13,5 +13,18 @@
   "intro": {
     "description": "Convex에 대한 모든 것을 Expo를 활용하여 탐구해보세요!",
     "continueWithProvider": "{{provider}} 계정으로 시작하기"
+  },
+  "profileUpdate": {
+    "title": "프로필 업데이트",
+    "displayName": "닉네임",
+    "displayNamePlaceholder": "닉네임을 입력해주세요",
+    "jobTitle": "직함",
+    "jobTitlePlaceholder": "직함을 입력해주세요",
+    "description": "소개",
+    "descriptionPlaceholder": "자기소개를 입력해주세요",
+    "websites": "웹사이트",
+    "websiteUrl": "웹사이트 주소",
+    "githubUrl": "깃허브 주소",
+    "linkedInUrl": "링크드인 주소"
   }
 }

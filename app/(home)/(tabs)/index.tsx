@@ -1,6 +1,13 @@
 import styled, {css} from '@emotion/native';
 import {Stack, useRouter} from 'expo-router';
-import {Button, Icon, IconButton, Typography} from 'dooboo-ui';
+import {
+  Button,
+  ButtonColorType,
+  Icon,
+  IconButton,
+  IconName,
+  Typography,
+} from 'dooboo-ui';
 import {t} from '../../../src/STRINGS';
 import {Platform, ScrollView} from 'react-native';
 import {IC_ICON} from '../../../src/icons';
@@ -10,6 +17,9 @@ import FallbackComponent from '../../../src/uis/FallbackComponent';
 import {useAuth} from '@clerk/clerk-expo';
 import {useState} from 'react';
 import {RectButton} from 'react-native-gesture-handler';
+import {useQuery} from 'convex/react';
+import {api} from '../../../convex/_generated/api';
+import {openURL} from 'expo-linking';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -67,6 +77,7 @@ export default function My(): JSX.Element {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const {signOut} = useAuth();
   const {push} = useRouter();
+  const user = useQuery(api.users.currentUser, {});
 
   const handleSignOut = async () => {
     try {
@@ -77,6 +88,16 @@ export default function My(): JSX.Element {
       setIsSigningOut(false);
     }
   };
+
+  const userLinks: {
+    url: string | undefined;
+    icon: IconName;
+    color: ButtonColorType;
+  }[] = [
+    {url: user?.websiteUrl, icon: 'Browser', color: 'primary'},
+    {url: user?.githubUrl, icon: 'GithubLogo', color: 'light'},
+    {url: user?.linkedInUrl, icon: 'LinkedinLogo', color: 'light'},
+  ];
 
   return (
     <ErrorBoundary FallbackComponent={FallbackComponent}>
@@ -115,24 +136,22 @@ export default function My(): JSX.Element {
         >
           <ProfileHeader>
             <UserAvatar source={IC_ICON} />
-            <TitleText>I'm [displayName]</TitleText>
-            <Typography.Body1>[Job Title]</Typography.Body1>
+            <TitleText>I'm {user?.displayName || ''}</TitleText>
+            <Typography.Body1>{user?.jobTitle || ''}</Typography.Body1>
           </ProfileHeader>
           <Content>
-            <Description>[Description]</Description>
+            <Description>{user?.description || ''}</Description>
             <WebsitesWrapper>
-              <IconButton
-                icon="Browser"
-                color="primary"
-                type="outlined"
-                onPress={() => {}}
-              />
-              <IconButton icon="GithubLogo" color="light" onPress={() => {}} />
-              <IconButton
-                icon="LinkedinLogo"
-                color="light"
-                onPress={() => {}}
-              />
+              {userLinks
+                .filter((link) => !!link.url) // url이 존재하는 것만 필터링
+                .map(({url, icon, color}) => (
+                  <IconButton
+                    key={icon}
+                    icon={icon}
+                    color={color}
+                    onPress={() => openURL(url!)}
+                  />
+                ))}
             </WebsitesWrapper>
           </Content>
         </ScrollView>

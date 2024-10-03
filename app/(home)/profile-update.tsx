@@ -6,7 +6,7 @@ import {t} from '../../src/STRINGS';
 import {api} from '@/convex/_generated/api';
 import {Image} from 'expo-image';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
-import {useMutation} from 'convex/react';
+import {useMutation, useQuery} from 'convex/react';
 import {RectButton} from 'react-native-gesture-handler';
 
 const Container = styled.SafeAreaView`
@@ -45,15 +45,16 @@ export default function ProfileUpdate(): JSX.Element {
   const {back} = useRouter();
   const {theme} = useDooboo();
   const updateProfile = useMutation(api.users.updateProfile);
+  const user = useQuery(api.users.currentUser, {});
 
   const {control, handleSubmit} = useForm<ProfileFormData>({
     defaultValues: {
-      displayName: '',
-      jobTitle: '',
-      description: '',
-      websiteUrl: '',
-      githubUrl: '',
-      linkedInUrl: '',
+      displayName: user?.displayName ?? '',
+      jobTitle: user?.jobTitle ?? '',
+      description: user?.description ?? '',
+      websiteUrl: user?.websiteUrl ?? '',
+      githubUrl: user?.githubUrl ?? '',
+      linkedInUrl: user?.linkedInUrl ?? '',
     },
   });
 

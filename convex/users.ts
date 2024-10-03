@@ -1,4 +1,4 @@
-import {mutation, query} from './_generated/server';
+import {mutation, query, QueryCtx} from './_generated/server';
 import {v} from 'convex/values';
 
 export const updateProfile = mutation({
@@ -32,10 +32,21 @@ export const updateProfile = mutation({
   },
 });
 
-export const getUser = query({
-  args: {id: v.id('users')},
+async function userByExternalId(
+  ctx: QueryCtx,
+  externalId: string,
+) {
+  return await ctx.db.query('users').unique();
+}
+
+export const currentUser = query({
   handler: async (ctx, args) => {
-    const user = await ctx.db.get(args.id);
-    console.log('User:', user);
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error('Called currentUser without authentication present');
+    }
+
+    const user = await userByExternalId(ctx, identity.tokenIdentifier);
+    return user;
   },
 });

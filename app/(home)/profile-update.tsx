@@ -4,9 +4,11 @@ import {EditText, Icon, Typography, useDooboo} from 'dooboo-ui';
 import {Stack, useRouter} from 'expo-router';
 import {Platform, ScrollView} from 'react-native';
 import {t} from '../../src/STRINGS';
+import {api} from '@/convex/_generated/api';
 import {Image} from 'expo-image';
+import {useForm, Controller, SubmitHandler} from 'react-hook-form';
+import {useMutation} from 'convex/react';
 import {RectButton} from 'react-native-gesture-handler';
-import {useForm, Controller} from 'react-hook-form';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -44,6 +46,7 @@ export default function ProfileUpdate(): JSX.Element {
   const {back} = useRouter();
   const {user} = useUser();
   const {theme} = useDooboo();
+  const createUser = useMutation(api.users.createUser);
 
   const {control, handleSubmit} = useForm<ProfileFormData>({
     defaultValues: {
@@ -56,8 +59,20 @@ export default function ProfileUpdate(): JSX.Element {
     },
   });
 
-  const handleUpdate = (data: ProfileFormData) => {
-    console.log('Form Data:', data);
+  const handleUpdate: SubmitHandler<ProfileFormData> = async (data) => {
+    try {
+      console.log('handleUpdate', data);
+      await createUser({
+        displayName: data.displayName || '',
+        jobTitle: data.jobTitle || '',
+        description: data.description || '',
+        websiteUrl: data.websiteUrl || '',
+        githubUrl: data.githubUrl || '',
+        linkedInUrl: data.linkedInUrl || '',
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (

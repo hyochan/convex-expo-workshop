@@ -2,7 +2,7 @@ import styled, {css} from '@emotion/native';
 import {Stack, useRouter} from 'expo-router';
 import {Button, Icon, IconButton, Typography} from 'dooboo-ui';
 import {t} from '../../../src/STRINGS';
-import {Platform, Pressable, ScrollView} from 'react-native';
+import {Platform, ScrollView} from 'react-native';
 import {IC_ICON} from '../../../src/icons';
 import ErrorBoundary from 'react-native-error-boundary';
 import {Image} from 'expo-image';

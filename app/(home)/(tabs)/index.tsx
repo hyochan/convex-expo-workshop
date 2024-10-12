@@ -135,7 +135,9 @@ export default function My(): JSX.Element {
           `}
         >
           <ProfileHeader>
-            <UserAvatar source={IC_ICON} />
+            <UserAvatar
+              source={user?.avatarUrl ? {uri: user.avatarUrl} : IC_ICON}
+            />
             <TitleText>I'm {user?.displayName || ''}</TitleText>
             <Typography.Body1>{user?.jobTitle || ''}</Typography.Body1>
           </ProfileHeader>

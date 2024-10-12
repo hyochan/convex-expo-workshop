@@ -9,19 +9,21 @@ export const updateProfile = mutation({
     websiteUrl: v.string(),
     githubUrl: v.string(),
     linkedInUrl: v.string(),
+    avatarUrlId: v.optional(v.string()),
   }),
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error('Called storeUser without authentication present');
+      throw new Error('Called updateProfile without authentication present');
     }
 
-    const user = await ctx.db.query('users').unique();
+    const user = await userByExternalId(ctx, identity.tokenIdentifier);
 
     if (user !== null) {
-      if (user.name !== identity.name) {
-        await ctx.db.patch(user._id, args);
-      }
+      await ctx.db.patch(user._id, {
+        ...args,
+      });
+
       return user._id;
     }
 
@@ -32,11 +34,11 @@ export const updateProfile = mutation({
   },
 });
 
-async function userByExternalId(
-  ctx: QueryCtx,
-  externalId: string,
-) {
-  return await ctx.db.query('users').unique();
+export async function userByExternalId(ctx: QueryCtx, externalId: string) {
+  return await ctx.db
+    .query('users')
+    .filter((q) => q.eq(q.field("tokenIdentifier"), externalId))
+    .unique();
 }
 
 export const currentUser = query({
@@ -47,6 +49,18 @@ export const currentUser = query({
     }
 
     const user = await userByExternalId(ctx, identity.tokenIdentifier);
-    return user;
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    let avatarUrl = null;
+    if (user.avatarUrlId) {
+      avatarUrl = await ctx.storage.getUrl(user.avatarUrlId);
+    }
+
+    return {
+      ...user,
+      avatarUrl,
+    };
   },
 });

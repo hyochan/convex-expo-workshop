@@ -1,13 +1,20 @@
 import styled, {css} from '@emotion/native';
 import {EditText, Icon, Typography, useDooboo} from 'dooboo-ui';
 import {Stack, useRouter} from 'expo-router';
-import {Platform, ScrollView} from 'react-native';
+import {ActivityIndicator, Platform, ScrollView} from 'react-native';
 import {t} from '../../src/STRINGS';
+import {
+  ImagePickerAsset,
+  launchImageLibraryAsync,
+  MediaTypeOptions,
+  requestMediaLibraryPermissionsAsync,
+} from 'expo-image-picker';
 import {api} from '@/convex/_generated/api';
 import {Image} from 'expo-image';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {useMutation, useQuery} from 'convex/react';
 import {RectButton} from 'react-native-gesture-handler';
+import {useState} from 'react';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -25,7 +32,7 @@ const Card = styled.View`
   gap: 24px;
 `;
 
-const ImageWrapper = styled.View`
+const ImageTouchable = styled.TouchableOpacity`
   padding: 8px;
 
   justify-content: center;
@@ -46,6 +53,11 @@ export default function ProfileUpdate(): JSX.Element {
   const {theme} = useDooboo();
   const updateProfile = useMutation(api.users.updateProfile);
   const user = useQuery(api.users.currentUser, {});
+  const [loading, setLoading] = useState(false);
+  const [imagePickerAsset, setImagePickerAsset] =
+    useState<ImagePickerAsset | null>(null);
+  const generateUploadUrl = useMutation(api.upload.generateUploadUrl);
+  const sendImage = useMutation(api.upload.sendImage);
 
   const {control, handleSubmit} = useForm<ProfileFormData>({
     defaultValues: {
@@ -58,10 +70,61 @@ export default function ProfileUpdate(): JSX.Element {
     },
   });
 
-  const handleUpdate: SubmitHandler<ProfileFormData> = async (data) => {
-    await updateProfile(data);
-    back();
+  const handleImagePressed = async () => {
+    const {granted} = await requestMediaLibraryPermissionsAsync();
+
+    if (granted) {
+      const image = await launchImageLibraryAsync({
+        ...{
+          quality: 1,
+          aspect: [1, 1],
+          mediaTypes: MediaTypeOptions.Images,
+        },
+      });
+
+      setImagePickerAsset(image.assets?.[0] || null);
+    }
   };
+
+  const handleUpdate: SubmitHandler<ProfileFormData> = async (data) => {
+    setLoading(true);
+
+    try {
+      let avatarUrlId: string | undefined;
+
+      if (imagePickerAsset) {
+        const url = await generateUploadUrl();
+        const response = await fetch(imagePickerAsset.uri);
+        const blob = await response.blob();
+
+        const result = await fetch(url, {
+          method: 'POST',
+          headers: imagePickerAsset.type
+            ? {'Content-Type': `${imagePickerAsset.type}/*`}
+            : {},
+          body: blob,
+        });
+
+        const {storageId} = await result.json();
+        await sendImage({storageId});
+
+        avatarUrlId = storageId;
+      }
+
+      await updateProfile({
+        ...data,
+        avatarUrlId,
+      });
+
+      back();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const image = imagePickerAsset?.uri ?? user?.avatarUrl;
 
   return (
     <Container>
@@ -69,35 +132,38 @@ export default function ProfileUpdate(): JSX.Element {
         options={{
           title: t('profileUpdate.title'),
           headerShown: true,
-          headerRight: () => (
-            <RectButton
-              underlayColor="transparent"
-              // @ts-ignore
-              onPress={handleSubmit(handleUpdate)}
-              hitSlop={{
-                bottom: 8,
-                left: 8,
-                right: 8,
-                top: 8,
-              }}
-              style={
-                Platform.OS === 'web'
-                  ? css`
-                      border-radius: 48px;
-                    `
-                  : css`
-                      border-radius: 48px;
-                    `
-              }
-            >
-              <Icon name="Pencil" size={18} />
-            </RectButton>
-          ),
+          headerRight: () =>
+            loading ? (
+              <ActivityIndicator color={theme.text.label} />
+            ) : (
+              <RectButton
+                underlayColor="transparent"
+                // @ts-ignore
+                onPress={handleSubmit(handleUpdate)}
+                hitSlop={{
+                  bottom: 8,
+                  left: 8,
+                  right: 8,
+                  top: 8,
+                }}
+                style={
+                  Platform.OS === 'web'
+                    ? css`
+                        border-radius: 48px;
+                      `
+                    : css`
+                        border-radius: 48px;
+                      `
+                }
+              >
+                <Icon name="Pencil" size={18} />
+              </RectButton>
+            ),
         }}
       />
       <ScrollView>
         <Card>
-          <ImageWrapper>
+          <ImageTouchable activeOpacity={0.7} onPress={handleImagePressed}>
             <Image
               style={css`
                 width: 148px;
@@ -105,18 +171,20 @@ export default function ProfileUpdate(): JSX.Element {
                 border-radius: 80px;
                 background-color: ${theme.bg.paper};
               `}
-              source={{uri: ''}}
+              source={{uri: image}}
             />
-            <Icon
-              name="Camera"
-              size={24}
-              color={theme.text.placeholder}
-              style={css`
-                position: absolute;
-                align-self: center;
-              `}
-            />
-          </ImageWrapper>
+            {!image ? (
+              <Icon
+                name="Camera"
+                size={24}
+                color={theme.text.placeholder}
+                style={css`
+                  position: absolute;
+                  align-self: center;
+                `}
+              />
+            ) : null}
+          </ImageTouchable>
           <Controller
             control={control}
             name="displayName"

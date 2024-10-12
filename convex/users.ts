@@ -4,12 +4,12 @@ import {v} from 'convex/values';
 export const updateProfile = mutation({
   args: v.object({
     displayName: v.string(),
-    jobTitle: v.string(),
-    description: v.string(),
-    websiteUrl: v.string(),
-    githubUrl: v.string(),
-    linkedInUrl: v.string(),
-    avatarUrlId: v.optional(v.string()),
+    jobTitle: v.optional(v.string()),
+    description: v.optional(v.string()),
+    websiteUrl: v.optional(v.string()),
+    githubUrl: v.optional(v.string()),
+    linkedInUrl: v.optional(v.string()),
+    avatarUrlId: v.optional(v.id('_storage')),
   }),
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();

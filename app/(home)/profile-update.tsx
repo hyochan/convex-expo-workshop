@@ -15,6 +15,7 @@ import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {useMutation, useQuery} from 'convex/react';
 import {RectButton} from 'react-native-gesture-handler';
 import {useState} from 'react';
+import {Id} from '../../convex/_generated/dataModel';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -90,7 +91,7 @@ export default function ProfileUpdate(): JSX.Element {
     setLoading(true);
 
     try {
-      let avatarUrlId: string | undefined;
+      let avatarUrlId: Id<'_storage'> | undefined;
 
       if (imagePickerAsset) {
         const url = await generateUploadUrl();
@@ -171,7 +172,7 @@ export default function ProfileUpdate(): JSX.Element {
                 border-radius: 80px;
                 background-color: ${theme.bg.paper};
               `}
-              source={{uri: image}}
+              source={{uri: image || ''}}
             />
             {!image ? (
               <Icon

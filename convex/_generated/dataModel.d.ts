@@ -1,5 +1,3 @@
-/* prettier-ignore-start */
-
 /* eslint-disable */
 /**
  * Generated data model types.
@@ -15,9 +13,9 @@ import type {
   DocumentByName,
   TableNamesInDataModel,
   SystemTableNames,
-} from "convex/server";
-import type { GenericId } from "convex/values";
-import schema from "../schema.js";
+} from 'convex/server';
+import type {GenericId} from 'convex/values';
+import schema from '../schema.js';
 
 /**
  * The names of all of your Convex tables.
@@ -60,5 +58,3 @@ export type Id<TableName extends TableNames | SystemTableNames> =
  * `mutationGeneric` to make them type-safe.
  */
 export type DataModel = DataModelFromSchemaDefinition<typeof schema>;
-
-/* prettier-ignore-end */

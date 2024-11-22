@@ -1,5 +1,3 @@
-/* prettier-ignore-start */
-
 /* eslint-disable */
 /**
  * Generated utilities for implementing server-side Convex query and mutation functions.
@@ -18,7 +16,7 @@ import {
   internalActionGeneric,
   internalMutationGeneric,
   internalQueryGeneric,
-} from "convex/server";
+} from 'convex/server';
 
 /**
  * Define a query in this Convex app's public API.
@@ -89,5 +87,3 @@ export const internalAction = internalActionGeneric;
  * @returns The wrapped endpoint function. Route a URL path to this function in `convex/http.js`.
  */
 export const httpAction = httpActionGeneric;
-
-/* prettier-ignore-end */

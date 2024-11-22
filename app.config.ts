@@ -30,7 +30,6 @@ export default ({config}: ConfigContext): ExpoConfig => ({
   name: 'Convex Expo Workshop',
   scheme: 'convexexpoworkshop',
   slug: 'convexexpoworkshop',
-  privacy: 'public',
   platforms: ['ios', 'android', 'web'],
   version,
   orientation: 'default',
@@ -59,7 +58,7 @@ export default ({config}: ConfigContext): ExpoConfig => ({
   splash: {
     image: './assets/splash.png',
     resizeMode: 'contain',
-    backgroundColor: '#1B1B1B',
+    backgroundColor: '#ffffff',
   },
   extra: {
     expoProjectId: process.env.expoProjectId,

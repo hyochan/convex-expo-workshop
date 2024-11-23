@@ -12,8 +12,6 @@ export async function sendMessage(message: string): Promise<string> {
   try {
     chatHistories.push({role: 'user', content: message});
 
-    console.log('chatHistories:', chatHistories);
-
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {

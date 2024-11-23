@@ -8,7 +8,9 @@
     "retry": "재시도",
     "or": "또는",
     "update": "업데이트",
-    "signOut": "로그아웃"
+    "signOut": "로그아웃",
+    "intro": "무엇을 도와드릴까요?",
+    "chat": "채팅"
   },
   "intro": {
     "description": "Convex에 대한 모든 것을 Expo를 활용하여 탐구해보세요!",

@@ -145,7 +145,7 @@ export default function My(): JSX.Element {
             <Description>{user?.description || ''}</Description>
             <WebsitesWrapper>
               {userLinks
-                .filter((link) => !!link.url) // url이 존재하는 것만 필터링
+                .filter((link) => !!link.url)
                 .map(({url, icon, color}) => (
                   <IconButton
                     key={icon}

@@ -33,6 +33,7 @@ export default ({config}: ConfigContext): ExpoConfig => ({
   platforms: ['ios', 'android', 'web'],
   version,
   orientation: 'default',
+  newArchEnabled: true,
   icon: './assets/icon.png',
   plugins: [
     // @ts-ignore
@@ -71,9 +72,6 @@ export default ({config}: ConfigContext): ExpoConfig => ({
   },
   assetBundlePatterns: ['**/*'],
   userInterfaceStyle: 'automatic',
-  locales: {
-    ko: './assets/langs/ios/ko.json',
-  },
   ios: {
     buildNumber: buildNumber.toString(),
     bundleIdentifier: 'io.convexexpoworkshop',

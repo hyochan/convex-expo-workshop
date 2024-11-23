@@ -8,7 +8,9 @@
     "or": "or",
     "update": "Update",
     "updateApp": "Update App",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "intro": "How can I help you?",
+    "chat": "Chat"
   },
   "intro": {
     "description": "Explore everything about Convex using Expo!",

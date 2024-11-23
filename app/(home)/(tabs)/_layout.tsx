@@ -4,7 +4,7 @@ import {Tabs} from 'expo-router';
 import {t} from '../../../src/STRINGS';
 import {css} from '@emotion/native';
 import {Image} from 'expo-image';
-import {IC_ICON} from '../../../src/icons';
+import {IC_AI_CHAT, IC_ICON} from '../../../src/icons';
 
 export default function TabLayout(): JSX.Element {
   const {theme} = useDooboo();
@@ -21,6 +21,32 @@ export default function TabLayout(): JSX.Element {
     >
       <Tabs.Screen
         name="index"
+        options={{
+          title: t('common.chat'),
+          tabBarIcon: ({focused}) => (
+            <View
+              style={css`
+                width: 20px;
+                height: 20px;
+                border-radius: 10px;
+                background-color: ${theme.bg.paper};
+                overflow: hidden;
+              `}
+            >
+              <Image
+                source={IC_AI_CHAT}
+                style={css`
+                  width: 20px;
+                  height: 20px;
+                  opacity: ${focused ? '1' : '0.5'};
+                `}
+              />
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="my"
         options={{
           title: t('common.my'),
           tabBarIcon: ({focused}) => (

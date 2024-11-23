@@ -1,177 +1,166 @@
+import {startTransition, useCallback, useRef, useState} from 'react';
+import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import styled, {css} from '@emotion/native';
-import {Stack, useRouter} from 'expo-router';
-import {
-  Button,
-  ButtonColorType,
-  Icon,
-  IconButton,
-  IconName,
-  Typography,
-} from 'dooboo-ui';
-import {t} from '../../../src/STRINGS';
-import {Platform, ScrollView} from 'react-native';
-import {IC_ICON} from '../../../src/icons';
-import ErrorBoundary from 'react-native-error-boundary';
+import {FlashList} from '@shopify/flash-list';
+import {Icon, Typography, useDooboo} from 'dooboo-ui';
 import {Image} from 'expo-image';
-import FallbackComponent from '../../../src/uis/FallbackComponent';
-import {useAuth} from '@clerk/clerk-expo';
-import {useState} from 'react';
-import {RectButton} from 'react-native-gesture-handler';
-import {useQuery} from 'convex/react';
-import {api} from '../../../convex/_generated/api';
-import {openURL} from 'expo-linking';
+import {Stack} from 'expo-router';
 
-const Container = styled.SafeAreaView`
+import {IC_AI_CHAT} from '../../../src/icons';
+import {ChatMessage} from '../../../src/types';
+import {openURL} from '../../../src/utils/common';
+import ChatMessageListItem from '../../../src/uis/ChatMessageListItem';
+import ChatInput from '../../../src/uis/ChatInput';
+import {t} from '../../../src/STRINGS';
+
+const EmptyContainer = styled.SafeAreaView`
+  padding: 20px;
+
+  justify-content: center;
+  align-items: center;
+`;
+
+const LogoImage = styled(Image)`
+  width: 100px;
+  height: 100px;
+`;
+
+const EMPTY_CONTENT_MARGIN_TOP = 220;
+
+export const Container = styled.View`
   flex: 1;
   background-color: ${({theme}) => theme.bg.basic};
-
-  justify-content: center;
-  align-items: center;
 `;
 
-const ProfileHeader = styled.View`
-  align-items: center;
-  padding: 24px;
-  background-color: ${({theme}) => theme.bg.paper};
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
-`;
+export default function Chat(): JSX.Element {
+  const {bottom} = useSafeAreaInsets();
+  const {theme} = useDooboo();
+  const [message, setMessage] = useState('');
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const listRef = useRef<FlashList<ChatMessage>>(null);
+  const marginTopValue = useSharedValue(EMPTY_CONTENT_MARGIN_TOP);
 
-const Content = styled.View`
-  padding: 16px;
-  flex: 1;
+  const animatedStyle = useAnimatedStyle(() => {
+    return {marginTop: marginTopValue.value};
+  });
 
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-`;
+  const sendChatMessage = useCallback(async (): Promise<void> => {
+    const randomReplies = [
+      'Hey! I am a bot. I am not capable of understanding your message.',
+      'What can I help you with?',
+      'Are you a human?',
+      'Nice to meet you!',
+      'How are you doing?',
+      'I am a bot. I am not capable of understanding your message.',
+    ];
 
-const UserAvatar = styled(Image)`
-  width: 120px;
-  height: 120px;
-  border-radius: 60px;
-  margin-bottom: 16px;
-  border-width: 3px;
-  border-color: ${({theme}) => theme.role.border};
-`;
-
-const TitleText = styled(Typography.Heading5)`
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 8px;
-`;
-
-const Description = styled.Text`
-  font-size: 16px;
-  color: ${({theme}) => theme.text.label};
-  text-align: center;
-  margin-bottom: 16px;
-`;
-
-const WebsitesWrapper = styled.View`
-  flex-direction: row;
-  gap: 16px;
-`;
-
-export default function My(): JSX.Element {
-  const [isSigningOut, setIsSigningOut] = useState(false);
-  const {signOut} = useAuth();
-  const {push} = useRouter();
-  const user = useQuery(api.users.currentUser, {});
-
-  const handleSignOut = async () => {
-    try {
-      setIsSigningOut(true);
-
-      await signOut();
-    } finally {
-      setIsSigningOut(false);
-    }
-  };
-
-  const userLinks: {
-    url: string | undefined;
-    icon: IconName;
-    color: ButtonColorType;
-  }[] = [
-    {url: user?.websiteUrl, icon: 'Browser', color: 'primary'},
-    {url: user?.githubUrl, icon: 'GithubLogo', color: 'light'},
-    {url: user?.linkedInUrl, icon: 'LinkedinLogo', color: 'light'},
-  ];
+    setChatMessages((prevMessages) => [
+      {
+        message,
+        answer: randomReplies[Math.floor(Math.random() * randomReplies.length)],
+      },
+      ...prevMessages,
+    ]);
+    setMessage('');
+  }, [message]);
 
   return (
-    <ErrorBoundary FallbackComponent={FallbackComponent}>
+    <Container>
       <Stack.Screen
         options={{
-          title: t('common.my'),
           headerRight: () => (
-            <RectButton
-              underlayColor="transparent"
+            <Pressable
               onPress={() => {
-                push('/profile-update');
+                openURL('https://github.com/hyochan/convex-expo-workshop');
               }}
-              hitSlop={{bottom: 8, left: 8, right: 8, top: 8}}
-              style={
-                Platform.OS === 'web'
-                  ? css`
-                      border-radius: 48px;
-                    `
-                  : css`
-                      margin-top: 4px;
-                      width: 26px;
-                    `
-              }
+              style={css`
+                padding: 12px;
+              `}
             >
-              <Icon name="Pencil" size={18} />
-            </RectButton>
+              <View
+                style={css`
+                  border-radius: 24px;
+                  border-width: 1px;
+                  border-color: ${theme.text.basic};
+                  padding: 4px;
+                `}
+              >
+                <Icon color={theme.text.basic} name="GithubLogo" size={12} />
+              </View>
+            </Pressable>
           ),
         }}
       />
-      <Container>
-        <ScrollView
-          bounces={false}
-          style={css`
-            align-self: stretch;
-          `}
-        >
-          <ProfileHeader>
-            <UserAvatar
-              source={user?.avatarUrl ? {uri: user.avatarUrl} : IC_ICON}
-            />
-            <TitleText>I'm {user?.displayName || ''}</TitleText>
-            <Typography.Body1>{user?.jobTitle || ''}</Typography.Body1>
-          </ProfileHeader>
-          <Content>
-            <Description>{user?.description || ''}</Description>
-            <WebsitesWrapper>
-              {userLinks
-                .filter((link) => !!link.url) // url이 존재하는 것만 필터링
-                .map(({url, icon, color}) => (
-                  <IconButton
-                    key={icon}
-                    icon={icon}
-                    color={color}
-                    onPress={() => openURL(url!)}
-                  />
-                ))}
-            </WebsitesWrapper>
-          </Content>
-        </ScrollView>
-        <Button
-          style={css`
-            padding: 0 24px;
-            min-width: 200px;
 
-            position: absolute;
-            bottom: 16px;
-          `}
-          type="outlined"
-          color="warning"
-          text={t('common.signOut')}
-          onPress={handleSignOut}
-          loading={isSigningOut}
+      <KeyboardAvoidingView
+        behavior={Platform.select({ios: 'padding', default: undefined})}
+        keyboardVerticalOffset={Platform.select({
+          ios: bottom + 68,
+          android: bottom + 80,
+        })}
+        style={[
+          css`
+            flex: 1;
+            align-self: stretch;
+          `,
+        ]}
+      >
+        <FlashList
+          ListEmptyComponent={
+            <EmptyContainer>
+              <Animated.View
+                style={[
+                  css`
+                    justify-content: center;
+                    align-items: center;
+                  `,
+                  animatedStyle,
+                ]}
+              >
+                <LogoImage
+                  source={IC_AI_CHAT}
+                  style={css`
+                    margin-bottom: 12px;
+                  `}
+                />
+                <Typography.Heading4>{t('common.intro')}</Typography.Heading4>
+              </Animated.View>
+            </EmptyContainer>
+          }
+          data={chatMessages}
+          estimatedItemSize={160}
+          //? Issue on inverted flashlist
+          // https://github.com/facebook/react-native/issues/21196
+          inverted={chatMessages.length !== 0}
+          onEndReached={() => {
+            // loadNext(LIST_CNT);
+          }}
+          onEndReachedThreshold={0.1}
+          ref={listRef}
+          renderItem={({item}) => <ChatMessageListItem item={item} />}
         />
-      </Container>
-    </ErrorBoundary>
+        <ChatInput
+          createChatMessage={sendChatMessage}
+          message={message}
+          disabled={message.length === 0}
+          setMessage={(txt) => {
+            setMessage(txt);
+          }}
+          styles={{
+            container: css`
+              border-radius: 0;
+              border-width: 0px;
+              border-top-width: 0.3px;
+              padding-bottom: 2px;
+            `,
+          }}
+        />
+      </KeyboardAvoidingView>
+    </Container>
   );
 }

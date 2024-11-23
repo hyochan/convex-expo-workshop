@@ -1,4 +1,4 @@
-import {startTransition, useCallback, useRef, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -7,7 +7,7 @@ import Animated, {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import styled, {css} from '@emotion/native';
 import {FlashList} from '@shopify/flash-list';
-import {Icon, Typography, useDooboo} from 'dooboo-ui';
+import {Icon, LoadingIndicator, Typography, useDooboo} from 'dooboo-ui';
 import {Image} from 'expo-image';
 import {Stack} from 'expo-router';
 
@@ -17,10 +17,13 @@ import {openURL} from '../../../src/utils/common';
 import ChatMessageListItem from '../../../src/uis/ChatMessageListItem';
 import ChatInput from '../../../src/uis/ChatInput';
 import {t} from '../../../src/STRINGS';
+import {sendMessage} from '../../../src/apis/openai';
+import {useMutation, usePaginatedQuery} from 'convex/react';
+import {api} from '../../../convex/_generated/api';
+import {DataModel} from '../../../convex/_generated/dataModel';
 
 const EmptyContainer = styled.SafeAreaView`
   padding: 20px;
-
   justify-content: center;
   align-items: center;
 `;
@@ -30,44 +33,79 @@ const LogoImage = styled(Image)`
   height: 100px;
 `;
 
-const EMPTY_CONTENT_MARGIN_TOP = 220;
-
-export const Container = styled.View`
+const Container = styled.View`
   flex: 1;
   background-color: ${({theme}) => theme.bg.basic};
 `;
+
+const EMPTY_CONTENT_MARGIN_TOP = 220;
 
 export default function Chat(): JSX.Element {
   const {bottom} = useSafeAreaInsets();
   const {theme} = useDooboo();
   const [message, setMessage] = useState('');
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [chatMessages, setChatMessages] = useState<
+    Omit<DataModel['messages']['document'], 'author'>[]
+  >([]);
   const listRef = useRef<FlashList<ChatMessage>>(null);
   const marginTopValue = useSharedValue(EMPTY_CONTENT_MARGIN_TOP);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {marginTop: marginTopValue.value};
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    marginTop: marginTopValue.value,
+  }));
+
+  const saveChatMutation = useMutation(api.messages.saveMessage);
+
+  const {results, status, loadMore} = usePaginatedQuery(
+    api.messages.list,
+    {paginationOpts: {initialNumItems: 5}},
+    {initialNumItems: 3},
+  );
+
+  useEffect(() => {
+    if (results) {
+      setChatMessages(results);
+    }
+  }, [results]);
+
+  const loadMoreMessages = () => {
+    if (status === 'CanLoadMore') {
+      loadMore(3);
+    }
+  };
 
   const sendChatMessage = useCallback(async (): Promise<void> => {
-    const randomReplies = [
-      'Hey! I am a bot. I am not capable of understanding your message.',
-      'What can I help you with?',
-      'Are you a human?',
-      'Nice to meet you!',
-      'How are you doing?',
-      'I am a bot. I am not capable of understanding your message.',
-    ];
+    if (!message.trim()) return;
 
-    setChatMessages((prevMessages) => [
-      {
-        message,
-        answer: randomReplies[Math.floor(Math.random() * randomReplies.length)],
-      },
-      ...prevMessages,
-    ]);
-    setMessage('');
-  }, [message]);
+    setLoading(true);
+
+    try {
+      const response = await sendMessage(message);
+      const newMessage = {message, reply: response};
+      const result = await saveChatMutation(newMessage);
+
+      setChatMessages((prevMessages) => [result, ...prevMessages]);
+    } catch (e) {
+      console.error('Failed to send or save message:', e);
+    } finally {
+      setMessage('');
+      setLoading(false);
+    }
+  }, [message, saveChatMutation]);
+
+  if (status === 'LoadingFirstPage') {
+    return (
+      <LoadingIndicator
+        style={css`
+          flex: 1;
+          align-self: stretch;
+          justify-content: center;
+          align-items: center;
+        `}
+      />
+    );
+  }
 
   return (
     <Container>
@@ -75,11 +113,12 @@ export default function Chat(): JSX.Element {
         options={{
           headerRight: () => (
             <Pressable
-              onPress={() => {
-                openURL('https://github.com/hyochan/convex-expo-workshop');
-              }}
+              onPress={() =>
+                openURL('https://github.com/hyochan/convex-expo-workshop')
+              }
+              hitSlop={8}
               style={css`
-                padding: 12px;
+                padding: 4px;
               `}
             >
               <View
@@ -103,12 +142,10 @@ export default function Chat(): JSX.Element {
           ios: bottom + 68,
           android: bottom + 80,
         })}
-        style={[
-          css`
-            flex: 1;
-            align-self: stretch;
-          `,
-        ]}
+        style={css`
+          flex: 1;
+          align-self: stretch;
+        `}
       >
         <FlashList
           ListEmptyComponent={
@@ -134,27 +171,22 @@ export default function Chat(): JSX.Element {
           }
           data={chatMessages}
           estimatedItemSize={160}
-          //? Issue on inverted flashlist
-          // https://github.com/facebook/react-native/issues/21196
           inverted={chatMessages.length !== 0}
-          onEndReached={() => {
-            // loadNext(LIST_CNT);
-          }}
-          onEndReachedThreshold={0.1}
           ref={listRef}
           renderItem={({item}) => <ChatMessageListItem item={item} />}
+          onEndReached={loadMoreMessages}
+          onEndReachedThreshold={0.5}
         />
         <ChatInput
           createChatMessage={sendChatMessage}
           message={message}
           disabled={message.length === 0}
-          setMessage={(txt) => {
-            setMessage(txt);
-          }}
+          loading={loading}
+          setMessage={setMessage}
           styles={{
             container: css`
               border-radius: 0;
-              border-width: 0px;
+              border-width: 0;
               border-top-width: 0.3px;
               padding-bottom: 2px;
             `,

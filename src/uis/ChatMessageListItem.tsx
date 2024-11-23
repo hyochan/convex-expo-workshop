@@ -26,7 +26,7 @@ const MessageContainer = styled.View`
   gap: 8px;
 `;
 
-function AIChatMessageListItem({answer}: {answer: string}): JSX.Element {
+function AIChatMessageListItem({reply}: {reply: string}): JSX.Element {
   const {theme} = useDooboo();
 
   return (
@@ -78,7 +78,7 @@ function AIChatMessageListItem({answer}: {answer: string}): JSX.Element {
               text-indent: -4px;
             `}
           >
-            {answer}
+            {reply}
           </ParsedText>
         </MessageContainer>
       </Content>
@@ -139,7 +139,7 @@ function HumanChatMessageListItem({message}: {message: string}): JSX.Element {
 type Props = {style?: StyleProp<ViewStyle>; item: ChatMessage};
 
 export default function ChatMessageListItem({style, item}: Props): JSX.Element {
-  const {message, answer} = item;
+  const {message, reply} = item;
 
   return (
     <View
@@ -151,7 +151,7 @@ export default function ChatMessageListItem({style, item}: Props): JSX.Element {
       ]}
     >
       <HumanChatMessageListItem message={message} />
-      <AIChatMessageListItem answer={answer} />
+      <AIChatMessageListItem reply={reply} />
     </View>
   );
 }

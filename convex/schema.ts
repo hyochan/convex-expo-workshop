@@ -17,4 +17,9 @@ export default defineSchema({
     body: v.id('_storage'),
     format: v.string(),
   }),
+  messages: defineTable({
+    author: v.id('users'),
+    message: v.string(),
+    reply: v.string(),
+  }),
 });

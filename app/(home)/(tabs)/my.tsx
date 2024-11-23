@@ -159,8 +159,7 @@ export default function My(): JSX.Element {
         </ScrollView>
         <Button
           style={css`
-            padding: 0 24px;
-            min-width: 200px;
+            min-width: 160px;
 
             position: absolute;
             bottom: 16px;

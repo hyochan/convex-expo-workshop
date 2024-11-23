@@ -11,7 +11,7 @@ export default function TabLayout(): JSX.Element {
 
   return (
     <Tabs
-      initialRouteName="chat"
+      initialRouteName="index"
       screenOptions={{
         tabBarActiveTintColor: theme.role.primary,
         headerStyle: {backgroundColor: theme.bg.basic},
@@ -20,7 +20,7 @@ export default function TabLayout(): JSX.Element {
       }}
     >
       <Tabs.Screen
-        name="chat"
+        name="index"
         options={{
           title: t('common.chat'),
           tabBarIcon: ({focused}) => (
@@ -46,7 +46,7 @@ export default function TabLayout(): JSX.Element {
         }}
       />
       <Tabs.Screen
-        name="index"
+        name="my"
         options={{
           title: t('common.my'),
           tabBarIcon: ({focused}) => (

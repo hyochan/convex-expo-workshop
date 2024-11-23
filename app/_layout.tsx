@@ -106,7 +106,6 @@ export default function RootLayout(): JSX.Element | null {
     undefined,
   );
 
-  // 테마 불러오기
   useEffect(() => {
     const initializeThemeType = async (): Promise<void> => {
       const darkMode = await AsyncStorage.getItem(AsyncStorageKey.DarkMode);

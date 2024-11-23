@@ -1,4 +1,3 @@
-export type ChatMessage = {
-  message: string;
-  answer: string;
-};
+import {DataModel} from '../convex/_generated/dataModel';
+
+export type ChatMessage = Omit<DataModel['messages']['document'], 'author'>;

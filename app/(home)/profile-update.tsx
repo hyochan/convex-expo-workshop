@@ -241,7 +241,6 @@ export default function ProfileUpdate(): JSX.Element {
                 label={t('profileUpdate.websiteUrl')}
                 placeholder={'https://...'}
                 value={value}
-                // `onChangeText`를 `onChange`와 연결
                 onChangeText={(text) => onChange(text)}
                 startElement={<Icon name="Browser" size={20} />}
               />
@@ -255,7 +254,6 @@ export default function ProfileUpdate(): JSX.Element {
                 label={t('profileUpdate.githubUrl')}
                 placeholder={'https://...'}
                 value={value}
-                // `onChangeText`를 `onChange`와 연결
                 onChangeText={(text) => onChange(text)}
                 startElement={<Icon name="GithubLogo" size={20} />}
               />
@@ -269,7 +267,6 @@ export default function ProfileUpdate(): JSX.Element {
                 label={t('profileUpdate.linkedInUrl')}
                 placeholder={'https://...'}
                 value={value}
-                // `onChangeText`를 `onChange`와 연결
                 onChangeText={(text) => onChange(text)}
                 startElement={<Icon name="LinkedinLogo" size={20} />}
               />

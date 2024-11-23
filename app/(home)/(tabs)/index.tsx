@@ -20,7 +20,6 @@ import {t} from '../../../src/STRINGS';
 import {sendMessage} from '../../../src/apis/openai';
 import {useMutation, usePaginatedQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
-import {DataModel} from '../../../convex/_generated/dataModel';
 
 const EmptyContainer = styled.SafeAreaView`
   padding: 20px;
@@ -45,9 +44,7 @@ export default function Chat(): JSX.Element {
   const {theme} = useDooboo();
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [chatMessages, setChatMessages] = useState<
-    Omit<DataModel['messages']['document'], 'author'>[]
-  >([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const listRef = useRef<FlashList<ChatMessage>>(null);
   const marginTopValue = useSharedValue(EMPTY_CONTENT_MARGIN_TOP);
 

@@ -151,7 +151,7 @@ export default function ChatMessageListItem({style, item}: Props): JSX.Element {
       ]}
     >
       <HumanChatMessageListItem message={message} />
-      <AIChatMessageListItem reply={reply} />
+      <AIChatMessageListItem reply={reply || ''} />
     </View>
   );
 }

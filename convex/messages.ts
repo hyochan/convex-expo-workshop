@@ -1,4 +1,4 @@
-import {mutation, query} from './_generated/server';
+import {internalMutation, mutation, query} from './_generated/server';
 import {v} from 'convex/values';
 import {userByExternalId} from './users';
 import {paginationOptsValidator} from 'convex/server';
@@ -43,5 +43,20 @@ export const list = query({
       .query('messages')
       .order('desc')
       .paginate(paginationOpts);
+  },
+});
+
+export const insertAiMessage = internalMutation({
+  args: v.object({
+    message: v.string(),
+    reply: v.string(),
+    author: v.id('users'),
+  }),
+  handler: async (ctx, {message, reply, author}) => {
+    await ctx.db.insert('messages', {
+      author,
+      message,
+      reply,
+    });
   },
 });

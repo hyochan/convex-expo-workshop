@@ -19,7 +19,7 @@ export async function sendMessage(message: string): Promise<string> {
         Authorization: `Bearer ${openAiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: chatHistories,
       }),
     });

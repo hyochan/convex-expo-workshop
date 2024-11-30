@@ -24,7 +24,7 @@
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.2.0",
     "@shopify/flash-list": "1.7.1",
-    "convex": "^1.17.1",
+    "convex": "^1.17.3",
     "date-fns": "^4.1.0",
     "dooboo-ui": "^0.2.41",
     "expo": "~52.0.11",

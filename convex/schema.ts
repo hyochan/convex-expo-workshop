@@ -20,6 +20,6 @@ export default defineSchema({
   messages: defineTable({
     author: v.id('users'),
     message: v.string(),
-    reply: v.string(),
+    reply: v.optional(v.string()),
   }),
 });
